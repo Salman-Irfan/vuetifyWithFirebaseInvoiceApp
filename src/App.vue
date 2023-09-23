@@ -1,23 +1,105 @@
 <template>
-  <router-view></router-view>
+  <div>
+    <!-- if not mobile -->
+    <div v-if="!mobile" class="app flex flex-column">
+      <NavigationComponent />
+      <div class="app-content flex flex-column">
+        <router-view />
+      </div>
+    </div>
+    <!-- if mobile -->
+    <div v-else class="mobile-message flex flex-column">
+      <h2>Sorry, this app is not supported on mobile devices</h2>
+      <p>To use this app please computer or a tablet</p>
+    </div>
+  </div>
 </template>
 
 <script>
+import NavigationComponent from "./components/NavigationComponent.vue";
 import HomeView from "./views/HomeView.vue";
 export default {
+  // name
   name: "App",
+  // data
+  data() {
+    return {
+      mobile: null,
+    };
+  },
+  // components
   components: {
-    HomeView,
+    NavigationComponent,
+    HomeView
+  },
+  // lifecycle methods
+  created(){
+    this.checkScreen();
+    // also add listener, that triggers when screen size changes
+    window.addEventListener("resize", this.checkScreen);
+  },
+  // methods
+  methods: {
+    checkScreen() {
+      const windowWidth = window.innerWidth;
+      if (windowWidth <= 750) {
+        this.mobile = true;
+        return;
+      }else{
+        this.mobile = false;
+      }
+    },
   },
 };
 </script>
 
 <style lang="scss">
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+.app {
   background-color: #141625;
+  min-height: 100vh;
+  @media (min-width: 900px) {
+    flex-direction: row !important;
+  }
+
+  .app-content {
+    padding: 0 20px;
+    flex: 1;
+    position: relative;
+  }
+}
+
+.mobile-message {
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #141625;
+  color: #fff;
+
+  p {
+    margin-top: 16px;
+  }
+}
+
+// animated invoice
+
+.invoice-enter-active,
+.invoice-leave-active {
+  transition: 0.8s ease all;
+}
+
+.invoice-enter-from,
+.invoice-leave-to {
+  transform: translateX(-700px);
 }
 
 button,
@@ -26,7 +108,7 @@ button,
   padding: 16px 24px;
   border-radius: 30px;
   border: none;
-  font-style: 12px;
+  font-size: 12px;
   margin-right: 8px;
   color: #fff;
 }
@@ -52,9 +134,11 @@ button,
 }
 
 // utility classes
+
 .flex {
   display: flex;
 }
+
 .flex-column {
   flex-direction: column;
 }
@@ -65,7 +149,7 @@ button,
   max-width: 850px;
   margin: 0 auto;
 
-  @media (min-width: 900px){
+  @media (min-width: 900px) {
     padding-top: 72px;
   }
 }
@@ -115,5 +199,4 @@ button,
   color: #dfe3fa;
   background-color: rgba(223, 227, 250, 0.1);
 }
-
 </style>
